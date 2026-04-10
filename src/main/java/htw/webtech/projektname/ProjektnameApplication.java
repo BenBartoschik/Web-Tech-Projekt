@@ -1,0 +1,13 @@
+package htw.webtech.projektname;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ProjektnameApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProjektnameApplication.class, args);
+	}
+
+}
