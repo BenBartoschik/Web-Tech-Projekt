@@ -11,7 +11,7 @@ import java.util.List;
 public class TransactionController {
 
     @CrossOrigin
-    @GetMapping("/transactions")
+    @GetMapping("/")
     public List<Transaction> getTransactions() {
         return List.of(
                 new Transaction(1L, "Miete", -800, "Wohnen"),
