@@ -16,7 +16,7 @@ public class TransactionController {
         return List.of(
                 new Transaction(1L, "Miete", -800, "Wohnen"),
                 new Transaction(2L, "Gehalt", 1500, "Einnahmen"),
-                new Transaction(3L, "Lebensmittel", -120, "Essen")
+                new Transaction(3L, "Restaurant", -120, "Essen")
                 );
     }
 }
