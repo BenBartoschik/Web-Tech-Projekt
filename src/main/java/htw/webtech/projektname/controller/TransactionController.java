@@ -17,8 +17,13 @@ public class TransactionController {
     }
 
     @GetMapping({"/transactions", "/"})
-    public List<Transaction> getTransactions() {
-        return repository.findAll();
+    public List<Transaction> getTransactions(
+            @RequestParam(name = "owner", defaultValue = "") String owner
+    ) {
+        if(owner.isBlank()){
+            return List.of();
+    }
+        return repository.findByOwner(owner);
     }
 
     @PostMapping("/transactions")
