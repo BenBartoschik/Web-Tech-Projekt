@@ -15,20 +15,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// @WebMvcTest existiert in Spring Boot 4.x nicht mehr (wurde entfernt).
-// @SpringBootTest würde den vollständigen Application-Context hochfahren (inkl. DB) —
-// für reine Controller-Tests zu schwer und ohne In-Memory-DB hier nicht nutzbar.
-//
-// Stattdessen: MockMvc im Standalone-Modus.
-// MockMvcBuilders.standaloneSetup() registriert nur den einen Controller, kein Spring-Context.
-// Das entspricht dem Konzept von @WebMvcTest (nur Web-Schicht, Service gemockt),
-// funktioniert aber ohne Spring-Boot-Test-Autoconfigure.
 @ExtendWith(MockitoExtension.class)
 class TransactionControllerTest {
 
@@ -99,5 +95,38 @@ class TransactionControllerTest {
         mockMvc.perform(get("/transactions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void putTransaction_validBody_returns200AndUpdatedTransaction() throws Exception {
+        Transaction updated = new Transaction("Miete aktualisiert", 900.0, "Rent", "user@test.de");
+        when(service.update(anyLong(), any())).thenReturn(updated);
+
+        mockMvc.perform(put("/transactions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Miete aktualisiert","amount":900.0,"category":"Rent","owner":"user@test.de"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Miete aktualisiert"))
+                .andExpect(jsonPath("$.amount").value(900.0));
+    }
+
+    @Test
+    void putTransaction_emptyTitle_returns400() throws Exception {
+        mockMvc.perform(put("/transactions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"","amount":900.0,"category":"Rent","owner":"user@test.de"}
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteTransaction_returns204() throws Exception {
+        mockMvc.perform(delete("/transactions/1"))
+                .andExpect(status().isNoContent());
+
+        verify(service).delete(1L);
     }
 }
