@@ -68,11 +68,25 @@ class TransactionControllerTest {
     }
 
     @Test
-    void postTransaction_negativeAmount_returns400() throws Exception {
+    void postTransaction_negativeAmount_isAccepted() throws Exception {
+        Transaction saved = new Transaction("Ausgabe", -50.0, "Income", "user@test.de");
+        when(service.create(any())).thenReturn(saved);
+
         mockMvc.perform(post("/transactions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"Test","amount":-50.0,"category":"Income","owner":"user@test.de"}
+                                {"title":"Ausgabe","amount":-50.0,"category":"Income","owner":"user@test.de"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amount").value(-50.0));
+    }
+
+    @Test
+    void postTransaction_zeroAmount_returns400() throws Exception {
+        mockMvc.perform(post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Test","amount":0.0,"category":"Income","owner":"user@test.de"}
                                 """))
                 .andExpect(status().isBadRequest());
     }

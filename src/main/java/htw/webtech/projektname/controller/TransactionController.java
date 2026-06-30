@@ -41,8 +41,8 @@ public class TransactionController {
         if (transaction.getTitle() == null || transaction.getTitle().isBlank()) {
             return ResponseEntity.badRequest().body("title darf nicht leer sein");
         }
-        if (transaction.getAmount() <= 0) {
-            return ResponseEntity.badRequest().body("amount muss positiv sein");
+        if (transaction.getAmount() == 0) {
+            return ResponseEntity.badRequest().body("amount darf nicht 0 sein");
         }
         return ResponseEntity.ok(service.update(id, transaction));
     }
@@ -58,8 +58,8 @@ public class TransactionController {
         if (transaction.getTitle() == null || transaction.getTitle().isBlank()) {
             return ResponseEntity.badRequest().body("title darf nicht leer sein");
         }
-        if (transaction.getAmount() <= 0) {
-            return ResponseEntity.badRequest().body("amount muss positiv sein");
+        if (transaction.getAmount() == 0) {
+            return ResponseEntity.badRequest().body("amount darf nicht 0 sein");
         }
         return ResponseEntity.ok(service.create(transaction));
     }
